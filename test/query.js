@@ -20,19 +20,22 @@ const to = new Date()
 function isObject(o) {
   return Object.getPrototypeOf(o) === isObject.OBJECTPROTO;
 }
+
 isObject.OBJECTPROTO = Object.getPrototypeOf({});
 
 describe('Browser client', () => {
 
-  it('sends simple query', async() => {
+  it('sends simple query', async () => {
     const options = {
       dateFrom: from,
       dateTo: to,
       query: QUERY,
     }
-    const server = new TestServer({contentType: 'json', response: {
-      object: [1, 2],
-    }})
+    const server = new TestServer({
+      contentType: 'json', response: {
+        object: [1, 2],
+      }
+    })
     await server.start(3331)
     const result = await client.query(options)
     result.object.length.should.be.a.Number()
@@ -41,7 +44,52 @@ describe('Browser client', () => {
     server.stop()
   });
 
-  it('downloads raw query', async() => {
+  it('sends web.activty.all query with a lot of events query', async () => {
+    const credentials2 = {
+      url: 'https://apiv2-eu.devo.com/search',
+      apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
+      apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
+    }
+    const client = clientLib.create(credentials2)
+    const options = {
+      "dateFrom": "2019-06-18T11:00:00Z",
+      "dateTo": "2019-06-18T11:30:30Z",
+      "query": "from siem.logtrust.web.activityAll",
+      // format: 'json/compact'
+    }
+    const result = await client.query(options)
+    result.object.length.should.be.greaterThan(0)
+    result.object.length.should.be.a.Number()
+  });
+
+  it('sends web.activty.all query with a lot of events', async (done) => {
+    const credentials2 = {
+      url: 'https://apiv2-eu.devo.com/search',
+      apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
+      apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
+    }
+    const client = clientLib.create(credentials2)
+    const options = {
+      "dateFrom": "2019-06-18T11:00:00Z",
+      "dateTo": "2019-06-18T11:30:30Z",
+      "query": "from siem.logtrust.web.activityAll",
+      // format: 'json/compact'
+    }
+    const result = await client.stream(options, {
+      meta: (e) => e,//console.log('meta:', e),
+      data: (e) => e,console.log('row:', e),
+      error: error => console.error(error),
+      done: (data) => {
+        console.log('END adasdasd')
+        data.object.length.should.be.greaterThan(0);
+        done();
+      },
+    })
+
+    // result.object.length.should.be.a.Number()
+  });
+
+  it('downloads raw query', async () => {
     const options = {
       dateFrom: from,
       dateTo: to,
@@ -55,7 +103,7 @@ describe('Browser client', () => {
     server.stop()
   });
 
-  it('queries in streaming mode', async() => {
+  it('queries in streaming mode', async () => {
     const options = {
       dateFrom: from,
       dateTo: to,
@@ -101,7 +149,7 @@ describe('Browser client', () => {
       contentType: 'json',
       response: {
         object: {
-          m: { colA: { index: 0, type: 'int4' }},
+          m: {colA: {index: 0, type: 'int4'}},
           d: [[0], [1]]
         }
       }
@@ -136,7 +184,7 @@ describe('Browser client', () => {
       contentType: 'json',
       response: {
         object: {
-          m: { colA: { index: 0, type: 'int4' }},
+          m: {colA: {index: 0, type: 'int4'}},
           d: [[0], [1]]
         }
       }
