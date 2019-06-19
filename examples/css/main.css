@@ -100,6 +100,7 @@ html, body {
 #inner_fixed {
   height: 200px;
   background-color: grey;
+  padding: 20px;
 }
 
 .inner_remaining {
