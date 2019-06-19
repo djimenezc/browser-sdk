@@ -12,14 +12,57 @@ const options = {
 
 const client = devo.client(credentials);
 
+document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
+document.getElementById("to-input").value = options.dateTo.slice(0, -1);
+document.getElementById("query-text").value = options.query;
+
+document.getElementById("from-input").addEventListener('change', (event) => {
+  options.dateFrom = new Date(event.currentTarget.value).toISOString();
+});
+document.getElementById("to-input").addEventListener('change', (event) => {
+  options.toFrom = new Date(event.currentTarget.value).toISOString();
+});
+
+document.getElementById("query-text").addEventListener('change', (event) => {
+  options.query = event.currentTarget.value;
+});
+
+function setLoadingVisible(visible) {
+  document.getElementById('lds-roller-wrapper').style.display =
+    visible ? "block" : "none";
+}
+
+function showError(error) {
+  if (error) {
+    console.error(error);
+    document.getElementById('msg').innerHTML =
+      typeof error === 'string' ? error :
+        error.jsonBody.error ? error.jsonBody.error : error.jsonBody.msg;
+  }
+}
+
+function showMsg(msg) {
+  console.log(msg);
+  document.getElementById('msg').innerHTML = msg;
+}
+
 document.getElementById("btn_launch").onclick = function () {
   document.body.style.cursor = 'progress';
   document.getElementById('divTableBody').innerHTML = "";
+  setLoadingVisible(true);
+  showMsg('');
+  if (agGridTable) {
+    agGridTable.destroy();
+    agGridTable = null;
+  }
   const start = window.performance.now();
-  client.stream(options , {
+  client.stream(options, {
     meta: addHead,
     data: addRow,
-    error: error => console.error(error),
+    error: (error) => {
+      setLoadingVisible(false);
+      showError(error);
+    },
     done: done(rows, start)
   });
 };
@@ -50,28 +93,41 @@ function download(format) {
 window.rows = [];
 window.columns = [];
 
+let agGridTable;
+
 function done(rows, start) {
   return function () {
     document.body.style.cursor = 'auto';
     const end = window.performance.now();
     const timeSpent = (end - start) / 1000;
-    console.log(`received ${rows.length} events in ${timeSpent} seconds`)
+    showMsg(`
+      received ${rows.length} events in ${timeSpent} seconds<br/>
+      Query: ${options.query}<br/>
+      From: ${options.dateFrom}<br/>
+      To: ${options.dateTo}<br/>
+      TimeStamp: ${new Date().toISOString()}<br/>
+      Server: ${credentials.url}
+    `);
+
     const eGridDiv = document.querySelector('#myGrid');
-    var gridOptions = {
+
+    const gridOptions = {
       columnDefs: columns.map((e, idx) => {
         return {
           headerName: e,
           field: e,
           colId: idx,
           valueGetter: function chainValueGetter(params) {
-            return options.returnRaw ? params.data[params.colDef.colId]:
+            return options.returnRaw ? params.data[params.colDef.colId] :
               params.data[params.colDef.field];
           }
         };
       }),
       rowData: rows
     };
-    new agGrid.Grid(eGridDiv, gridOptions);
+
+    agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
+    setLoadingVisible(false);
   };
 }
 
