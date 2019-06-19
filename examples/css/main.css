@@ -85,6 +85,29 @@ select {
   margin-right: 20px;
 }
 
+html, body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+#outer {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+#inner_fixed {
+  height: 200px;
+  background-color: grey;
+}
+
+.inner_remaining {
+  background-color: #DDDDDD;
+  flex-grow : 1;
+  height: auto;
+}
+
 
 /*-----Loader*/
 

@@ -47,14 +47,16 @@ function showMsg(msg) {
 }
 
 document.getElementById("btn_launch").onclick = function () {
-  document.body.style.cursor = 'progress';
-  document.getElementById('divTableBody').innerHTML = "";
+  console.log('starting request');
   setLoadingVisible(true);
   showMsg('');
   if (agGridTable) {
     agGridTable.destroy();
     agGridTable = null;
   }
+  document.getElementById('myGrid').style.width= '100%';
+  document.getElementById('myGrid').style.display= 'none';
+
   const start = window.performance.now();
   client.stream(options, {
     meta: addHead,
@@ -97,7 +99,6 @@ let agGridTable;
 
 function done(rows, start) {
   return function () {
-    document.body.style.cursor = 'auto';
     const end = window.performance.now();
     const timeSpent = (end - start) / 1000;
     showMsg(`
@@ -110,6 +111,7 @@ function done(rows, start) {
     `);
 
     const eGridDiv = document.querySelector('#myGrid');
+    eGridDiv.style.display= 'block';
 
     const gridOptions = {
       columnDefs: columns.map((e, idx) => {
@@ -132,34 +134,10 @@ function done(rows, start) {
 }
 
 function addRow(event) {
-  const body = document.getElementById('divTableBody');
-  const tbh = document.createElement('div');
-  tbh.className = 'divTableRow';
-  const cols = Object.keys(event);
-  for (let i = 0; i < cols.length; i++) {
-    const td = document.createElement('div');
-    td.appendChild(document.createTextNode(event[cols[i]]));
-    td.className = 'divTableCell';
-    tbh.appendChild(td);
-  }
-  //body.appendChild(tbh);
-
   rows.push(event);
 }
 
 function addHead(event) {
-  // const body = document.getElementById('divTableBody');
-  // const tbh = document.createElement('div');
-  // tbh.className = 'divTableRow divTableHeading';
-
-  // Object.keys(event).forEach(key => {
-  //   const td = document.createElement('div');
-  //   td.className = 'divTableHead';
-  //   td.appendChild(document.createTextNode(
-  //     key +
-  //     " (" + event[key].type + ")"));
-  //   tbh.appendChild(td);
-  // });
 
   function compare(a, b) {
     if (a.index > b.index) return 1;
@@ -169,6 +147,5 @@ function addHead(event) {
   }
 
   window.columns = Object.keys(event).sort(compare).map((item) => item);
-  // body.appendChild(tbh)
 }
 

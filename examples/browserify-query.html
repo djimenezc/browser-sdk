@@ -10,64 +10,70 @@
         href="https://unpkg.com/ag-grid-community/dist/styles/ag-theme-balham.css">
 </head>
 <body>
-<h1>Devo SDK: Simple Query Demo</h1>
+<div id="outer">
+  <div id="inner_fixed">
+    <h1>Devo SDK: Simple Query Demo</h1>
 
-<p>
-  The distributed <a href="../dist/devo-bundle.js">bundle</a> is used directly
-  in the
-  <a href="simple-query.js">demo code</a>.
-  Not intended for serious usage.
-</p>
-<div style="margin-bottom: 20px; display: flex; width: 100%;">
-    <label for="responseRowFormat">Response Format</label>
-    <select id="responseRowFormat" name="responseRowFormat">
-      <option selected>Raw data</option>
-      <option>Object data</option>
-    </select>
-    <label>
-      From
-      <input type="datetime-local" name="from" id="from-input">
-    </label>
-    <label>
-      To
-      <input type="datetime-local" name="to" id="to-input">
-    </label>
-  <label for="query-text">
-    Query
-  </label>
-  <input type="text" name="query-text" id="query-text" style="flex: 1;">
-</div>
-<div>
-  <button id="btn_launch">Launch Query</button>
-  <button id="btn_xslt">Excel Download</button>
-  <button id="btn_csv">CSV Download</button>
-  <button id="btn_tsv">TSV Download</button>
-  <button id="btn_msgpack">Msgpack Download</button>
-  <button id="btn_raw">Raw Download</button>
-  <button id="btn_json">JSON Download</button>
-</div>
-<hr>
-<div id="divTable" class="divTable greenTable"
-     style="width: 95%;border: 1px solid #000;">
-  <div id="divTableBody" class="divTableBody"></div>
-</div>
-
-<div id="lds-roller-wrapper" style="margin: 0 auto; width: 145px;
-display:none; padding: 300px 0;">
-  <div class="lds-roller">
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
-    <div></div>
+    <p>
+      The distributed <a href="../dist/devo-bundle.js">bundle</a> is used
+      directly
+      in the
+      <a href="simple-query.js">demo code</a>.
+      Not intended for serious usage.
+    </p>
+    <div style="margin-bottom: 20px; display: flex; width: 100%;">
+      <label for="responseRowFormat">Response Format</label>
+      <select id="responseRowFormat" name="responseRowFormat">
+        <option selected>Raw data</option>
+        <option>Object data</option>
+      </select>
+      <label>
+        From
+        <input type="datetime-local" name="from" id="from-input">
+      </label>
+      <label>
+        To
+        <input type="datetime-local" name="to" id="to-input">
+      </label>
+      <label for="query-text">
+        Query
+      </label>
+      <input type="text" name="query-text" id="query-text" style="flex: 1;">
+    </div>
+    <div>
+      <button id="btn_launch">Launch Query</button>
+      <button id="btn_xslt">Excel Download</button>
+      <button id="btn_csv">CSV Download</button>
+      <button id="btn_tsv">TSV Download</button>
+      <button id="btn_msgpack">Msgpack Download</button>
+      <button id="btn_raw">Raw Download</button>
+      <button id="btn_json">JSON Download</button>
+    </div>
+    <hr>
   </div>
+
+  <div class="inner_remaining">
+    <div id="lds-roller-wrapper" style="margin: 0 auto; width: 145px;
+display:none; padding: 300px 0;">
+      <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <div id="msg" style="margin: 40px"></div>
+    <div style="margin: 20px">
+      <div id="myGrid" style="height: 800px;width: 1000px; display:none;"
+           class="ag-theme-balham"></div>
+    </div>
+  </div>
+
 </div>
-<div id="msg" style="margin: 40px"></div>
-<div id="myGrid" style="height: 800px;width:1000px;"
-     class="ag-theme-balham"></div>
 
 <script
   src="https://unpkg.com/ag-grid-community/dist/ag-grid-community.min.noStyle.js">
