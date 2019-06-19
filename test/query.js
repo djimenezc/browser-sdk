@@ -5,17 +5,32 @@ const http = require('http');
 global.fetch = require('node-fetch');
 
 const clientLib = require('../lib/client.js');
+const forEach = require('mocha-each');
 
 const credentials = {
   url: 'http://127.0.0.1:3331/search',
   apiKey: 'key',
   apiSecret: 'secret',
-}
-const client = clientLib.create(credentials)
-const QUERY = 'from demo.ecommerce.data select eventdate,protocol,statusCode,method'
-const TABLE = 'demo.ecommerce.data'
-const from = new Date(Date.now() - 60 * 1000)
-const to = new Date()
+};
+const credentials2 = {
+  url: 'https://apiv2-eu.devo.com/search',
+  apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
+  apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
+};
+const nowIsoString = new Date().toISOString();
+const now = new Date();
+now.setMinutes( now.getMinutes() - 30 );
+
+const options2 = {
+  'dateFrom': now.toISOString(),
+  'dateTo': nowIsoString,
+  'query': 'from siem.logtrust.web.activityAll',
+};
+const client = clientLib.create(credentials);
+const QUERY = 'from demo.ecommerce.data select eventdate,protocol,statusCode,method';
+const TABLE = 'demo.ecommerce.data';
+const from = new Date(Date.now() - 60 * 1000);
+const to = new Date();
 
 function isObject(o) {
   return Object.getPrototypeOf(o) === isObject.OBJECTPROTO;
@@ -30,64 +45,56 @@ describe('Browser client', () => {
       dateFrom: from,
       dateTo: to,
       query: QUERY,
-    }
+    };
     const server = new TestServer({
       contentType: 'json', response: {
         object: [1, 2],
       }
-    })
-    await server.start(3331)
-    const result = await client.query(options)
-    result.object.length.should.be.a.Number()
-    ;(server.getError() === null).should.be.true()
-    server.getUrl().should.equal('/search/query')
+    });
+    await server.start(3331);
+    const result = await client.query(options);
+    result.object.length.should.be.a.Number();
+    (server.getError() === null).should.be.true();
+    server.getUrl().should.equal('/search/query');
     server.stop()
   });
 
   it('sends web.activty.all query with a lot of events query', async () => {
-    const credentials2 = {
-      url: 'https://apiv2-eu.devo.com/search',
-      apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
-      apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
-    }
-    const client = clientLib.create(credentials2)
-    const options = {
-      "dateFrom": "2019-06-18T11:00:00Z",
-      "dateTo": "2019-06-18T11:30:30Z",
-      "query": "from siem.logtrust.web.activityAll",
-      // format: 'json/compact'
-    }
-    const result = await client.query(options)
-    result.object.length.should.be.greaterThan(0)
-    result.object.length.should.be.a.Number()
+
+    const client = clientLib.create(credentials2);
+    const result = await client.query(options2);
+    result.object.length.should.be.greaterThan(0);
+    result.object.length.should.be.a.Number();
   });
 
-  it('sends web.activty.all query with a lot of events', async (done) => {
-    const credentials2 = {
-      url: 'https://apiv2-eu.devo.com/search',
-      apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
-      apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
-    }
-    const client = clientLib.create(credentials2)
-    const options = {
-      "dateFrom": "2019-06-18T11:00:00Z",
-      "dateTo": "2019-06-18T11:30:30Z",
-      "query": "from siem.logtrust.web.activityAll",
-      // format: 'json/compact'
-    }
-    const result = await client.stream(options, {
-      meta: (e) => e,//console.log('meta:', e),
-      data: (e) => e,console.log('row:', e),
-      error: error => console.error(error),
-      done: (data) => {
-        console.log('END adasdasd')
-        data.object.length.should.be.greaterThan(0);
-        done();
-      },
-    })
+  forEach([true, false])
+    .it('sends web.activty.all query with a lot of events streaming' +
+      ' rawConfig %s' +
+      ' ', (rawData, doneMocha) => {
+      const client =
+        clientLib.create(Object.assign({}, credentials2, {rawData}));
 
-    // result.object.length.should.be.a.Number()
-  });
+      const data = [];
+      let meta;
+
+      return client.stream(options2, {
+        meta: (e) => {
+          // console.log('meta:', e);
+          meta = e;
+        },
+        data: (e) => {
+          data.push(e);
+        }, //console.log('row:', e),
+        error: error => console.error(error),
+        done: () => {
+          // console.log('END stream');
+          data.length.should.be.greaterThan(0);
+          meta.should.not.be.null();
+          doneMocha();
+        },
+      });
+
+    });
 
   it('downloads raw query', async () => {
     const options = {
@@ -95,11 +102,11 @@ describe('Browser client', () => {
       dateTo: to,
       query: QUERY,
       format: 'raw',
-    }
-    const server = new TestServer({contentType: 'text', response: 'pepito\n'})
-    await server.start(3331)
-    const result = await client.query(options)
-    result.length.should.be.a.Number()
+    };
+    const server = new TestServer({contentType: 'text', response: 'pepito\n'});
+    await server.start(3331);
+    const result = await client.query(options);
+    result.length.should.be.a.Number();
     server.stop()
   });
 
@@ -108,12 +115,12 @@ describe('Browser client', () => {
       dateFrom: from,
       dateTo: to,
       query: QUERY,
-    }
-    const server = new TestServer({contentType: 'json', response: {}})
-    await server.start(3331)
-    await stream(options)
+    };
+    const server = new TestServer({contentType: 'json', response: {}});
+    await server.start(3331);
+    await stream(options);
     return server.stop()
-  })
+  });
 
   it('table schema (table exists)', async () => {
     const object = [
@@ -137,14 +144,14 @@ describe('Browser client', () => {
     const isEqual = JSON.stringify(result.object) === JSON.stringify(object);
     isEqual.should.be.exactly(true);
     server.stop();
-  })
+  });
 
   it('queries in streaming mode - event is an object', done => {
     const options = {
       dateFrom: from,
       dateTo: to,
       query: QUERY,
-    }
+    };
     const server = new TestServer({
       contentType: 'json',
       response: {
@@ -153,7 +160,7 @@ describe('Browser client', () => {
           d: [[0], [1]]
         }
       }
-    })
+    });
     let doDone = false;
     server.start(3331)
       .then(() => {
@@ -161,7 +168,8 @@ describe('Browser client', () => {
           meta: () => null,
           data: (d) => {
             if (doDone === true) return;
-            isObject(d) ? (doDone = true) && done() : done(new Error('Data should be an object'));
+            Array.isArray(d) ? (doDone = true) && done() : done(new Error('Data' +
+              ' should be an array'));
             cli.abort();
             server.stop();
           },
@@ -169,7 +177,7 @@ describe('Browser client', () => {
         });
       })
       .catch(done);
-  })
+  });
 
   it('queries in streaming mode - event is an array', done => {
     const options = {
@@ -177,7 +185,7 @@ describe('Browser client', () => {
       dateTo: to,
       query: QUERY,
       mapMetadata: false,
-    }
+    };
     let doDone = false;
 
     const server = new TestServer({
@@ -188,7 +196,7 @@ describe('Browser client', () => {
           d: [[0], [1]]
         }
       }
-    })
+    });
     server.start(3331)
       .then(() => {
         const cli = client.stream(options, {
@@ -207,8 +215,8 @@ describe('Browser client', () => {
 
 class TestServer {
   constructor(options) {
-    this._socket = null
-    this._error = null
+    this._socket = null;
+    this._error = null;
     if (typeof options.response == 'object') {
       this._response = JSON.stringify(options.response)
     } else {
@@ -217,13 +225,13 @@ class TestServer {
     this._server = http.createServer(socket => {
       this._socket = socket;
       this._socket.on('error', error => this._storeError(error))
-    })
-    this._server.on('error', error => this._storeError(error))
+    });
+    this._server.on('error', error => this._storeError(error));
     this._server.on('request', (request, response) => {
-      this._url = request.url
-      response.setHeader('content-type', options.contentType || 'text')
+      this._url = request.url;
+      response.setHeader('content-type', options.contentType || 'text');
       response.end(this._response)
-    })
+    });
     this._server.unref()
   }
 
@@ -244,7 +252,7 @@ class TestServer {
   }
 
   _storeError(error) {
-    console.error('Error %s', error)
+    console.error('Error %s', error);
     this._error = error
   }
 }
