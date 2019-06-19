@@ -19,7 +19,7 @@ const credentials2 = {
 };
 const nowIsoString = new Date().toISOString();
 const now = new Date();
-now.setMinutes( now.getMinutes() - 30 );
+now.setMinutes(now.getMinutes() - 30);
 
 const options2 = {
   'dateFrom': now.toISOString(),
@@ -68,33 +68,32 @@ describe('Browser client', () => {
   });
 
   forEach([true, false])
-    .it('sends web.activty.all query with a lot of events streaming' +
-      ' rawConfig %s' +
-      ' ', (rawData, doneMocha) => {
-      const client =
-        clientLib.create(Object.assign({}, credentials2, {rawData}));
+    .it('sends web.activty.all query with a lot of events streaming rawConfig %s',
+      (rawData, doneMocha) => {
+        const client =
+          clientLib.create(Object.assign({}, credentials2, {rawData}));
 
-      const data = [];
-      let meta;
+        const data = [];
+        let meta;
 
-      return client.stream(options2, {
-        meta: (e) => {
-          // console.log('meta:', e);
-          meta = e;
-        },
-        data: (e) => {
-          data.push(e);
-        }, //console.log('row:', e),
-        error: error => console.error(error),
-        done: () => {
-          // console.log('END stream');
-          data.length.should.be.greaterThan(0);
-          meta.should.not.be.null();
-          doneMocha();
-        },
+        return client.stream(options2, {
+          meta: (e) => {
+            // console.log('meta:', e);
+            meta = e;
+          },
+          data: (e) => {
+            data.push(e);
+          }, //console.log('row:', e),
+          error: error => console.error(error),
+          done: () => {
+            // console.log('END stream');
+            data.length.should.be.greaterThan(0);
+            meta.should.not.be.null();
+            doneMocha();
+          },
+        });
+
       });
-
-    });
 
   it('downloads raw query', async () => {
     const options = {
