@@ -19,7 +19,7 @@ document.getElementById("responseRowFormat").value =
   options.mapMetadata ? 'Object data' : 'Raw data';
 
 document.getElementById("responseRowFormat").addEventListener('change', (event) => {
-  options.mapMetadata = event.currentTarget.value === 'Object data' ;
+  options.mapMetadata = event.currentTarget.value === 'Object data';
 });
 document.getElementById("from-input").addEventListener('change', (event) => {
   options.dateFrom = new Date(event.currentTarget.value).toISOString();
@@ -51,6 +51,17 @@ function showMsg(msg) {
   document.getElementById('msg').innerHTML = msg;
 }
 
+function adjustTimeZoneOffset(options) {
+  return Object.assign({}, options, {
+    dateFrom: new Date(new Date(options.dateFrom).getTime() +
+      (new Date(options.dateFrom).getTimezoneOffset() * 60000))
+      .toISOString(),
+    dateTo: new Date(new Date(options.dateTo).getTime() +
+      (new Date(options.dateTo).getTimezoneOffset() * 60000))
+      .toISOString()
+  });
+}
+
 document.getElementById("btn_launch").onclick = function () {
   console.log('starting request');
   setLoadingVisible(true);
@@ -64,7 +75,7 @@ document.getElementById("btn_launch").onclick = function () {
 
   window.rows = [];
   const start = window.performance.now();
-  client.stream(options, {
+  client.stream(adjustTimeZoneOffset(options), {
     meta: addHead,
     data: addRow,
     error: (error) => {
@@ -120,11 +131,20 @@ function done(rows, start) {
     eGridDiv.style.display = 'block';
 
     const gridOptions = {
-      columnDefs: columns.map((e, idx) => {
+      defaultColDef: {
+        sortable: true
+      },
+      columnDefs: columns.map((field, idx) => {
         return {
-          headerName: e,
-          field: e,
+          headerName: field,
+          field: field,
           colId: idx,
+          resizable: true,
+          sort: field === 'eventdate' ? 'desc' : undefined,
+          valueFormatter: (params) => {
+            return params.colDef.field === 'eventdate' ?
+              new Date(params.value) : params.value;
+          },
           valueGetter: function chainValueGetter(params) {
             return !options.mapMetadata ? params.data[params.colDef.colId] :
               params.data[params.colDef.field];
