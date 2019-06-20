@@ -7,7 +7,7 @@ const options = {
   "dateFrom": "2018-07-02T11:00:00Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
-  returnRaw: false
+  mapMetadata: true
 };
 
 const client = devo.client(credentials);
@@ -16,10 +16,10 @@ document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
 document.getElementById("to-input").value = options.dateTo.slice(0, -1);
 document.getElementById("query-text").value = options.query;
 document.getElementById("responseRowFormat").value =
-  options.returnRaw ? 'Raw data' : 'Object data';
+  options.mapMetadata ? 'Object data' : 'Raw data';
 
 document.getElementById("responseRowFormat").addEventListener('change', (event) => {
-  options.returnRaw = event.currentTarget.value === 'Raw data';
+  options.mapMetadata = event.currentTarget.value === 'Object data' ;
 });
 document.getElementById("from-input").addEventListener('change', (event) => {
   options.dateFrom = new Date(event.currentTarget.value).toISOString();
@@ -126,7 +126,7 @@ function done(rows, start) {
           field: e,
           colId: idx,
           valueGetter: function chainValueGetter(params) {
-            return options.returnRaw ? params.data[params.colDef.colId] :
+            return !options.mapMetadata ? params.data[params.colDef.colId] :
               params.data[params.colDef.field];
           }
         };
