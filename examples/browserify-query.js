@@ -15,7 +15,12 @@ const client = devo.client(credentials);
 document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
 document.getElementById("to-input").value = options.dateTo.slice(0, -1);
 document.getElementById("query-text").value = options.query;
+document.getElementById("responseRowFormat").value =
+  options.returnRaw ? 'Raw data' : 'Object data';
 
+document.getElementById("responseRowFormat").addEventListener('change', (event) => {
+  options.returnRaw = event.currentTarget.value === 'Raw data';
+});
 document.getElementById("from-input").addEventListener('change', (event) => {
   options.dateFrom = new Date(event.currentTarget.value).toISOString();
 });
@@ -54,8 +59,8 @@ document.getElementById("btn_launch").onclick = function () {
     agGridTable.destroy();
     agGridTable = null;
   }
-  document.getElementById('myGrid').style.width= '100%';
-  document.getElementById('myGrid').style.display= 'none';
+  document.getElementById('myGrid').style.width = '100%';
+  document.getElementById('myGrid').style.display = 'none';
 
   const start = window.performance.now();
   client.stream(options, {
@@ -111,7 +116,7 @@ function done(rows, start) {
     `);
 
     const eGridDiv = document.querySelector('#myGrid');
-    eGridDiv.style.display= 'block';
+    eGridDiv.style.display = 'block';
 
     const gridOptions = {
       columnDefs: columns.map((e, idx) => {
