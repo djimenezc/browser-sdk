@@ -25,7 +25,7 @@ document.getElementById("from-input").addEventListener('change', (event) => {
   options.dateFrom = new Date(event.currentTarget.value).toISOString();
 });
 document.getElementById("to-input").addEventListener('change', (event) => {
-  options.toFrom = new Date(event.currentTarget.value).toISOString();
+  options.dateTo = new Date(event.currentTarget.value).toISOString();
 });
 
 document.getElementById("query-text").addEventListener('change', (event) => {
@@ -62,6 +62,7 @@ document.getElementById("btn_launch").onclick = function () {
   document.getElementById('myGrid').style.width = '100%';
   document.getElementById('myGrid').style.display = 'none';
 
+  window.rows = [];
   const start = window.performance.now();
   client.stream(options, {
     meta: addHead,
