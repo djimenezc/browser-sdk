@@ -32,59 +32,7 @@ document.getElementById("query-text").addEventListener('change', (event) => {
   options.query = event.currentTarget.value;
 });
 
-function setLoadingVisible(visible) {
-  document.getElementById('lds-roller-wrapper').style.display =
-    visible ? "block" : "none";
-}
-
-function showError(error) {
-  if (error) {
-    console.error(error);
-    document.getElementById('msg').innerHTML =
-      typeof error === 'string' ? error :
-        error.jsonBody.error ? error.jsonBody.error : error.jsonBody.msg;
-  }
-}
-
-function showMsg(msg) {
-  console.log(msg);
-  document.getElementById('msg').innerHTML = msg;
-}
-
-function adjustTimeZoneOffset(options) {
-  return Object.assign({}, options, {
-    dateFrom: new Date(new Date(options.dateFrom).getTime() +
-      (new Date(options.dateFrom).getTimezoneOffset() * 60000))
-      .toISOString(),
-    dateTo: new Date(new Date(options.dateTo).getTime() +
-      (new Date(options.dateTo).getTimezoneOffset() * 60000))
-      .toISOString()
-  });
-}
-
-document.getElementById("btn_launch").onclick = function () {
-  console.log('starting request');
-  setLoadingVisible(true);
-  showMsg('');
-  if (agGridTable) {
-    agGridTable.destroy();
-    agGridTable = null;
-  }
-  document.getElementById('myGrid').style.width = '100%';
-  document.getElementById('myGrid').style.display = 'none';
-
-  window.rows = [];
-  const start = window.performance.now();
-  client.stream(adjustTimeZoneOffset(options), {
-    meta: addHead,
-    data: addRow,
-    error: (error) => {
-      setLoadingVisible(false);
-      showError(error);
-    },
-    done: done(rows, start)
-  });
-};
+document.getElementById("btn_launch").onclick = launchRequest;
 document.getElementById("btn_xslt").onclick = function () {
   download('xlst')
 };
@@ -113,6 +61,30 @@ window.rows = [];
 window.columns = [];
 
 let agGridTable;
+
+function launchRequest() {
+  console.log('starting request');
+  setLoadingVisible(true);
+  showMsg('');
+  if (agGridTable) {
+    agGridTable.destroy();
+    agGridTable = null;
+  }
+  document.getElementById('myGrid').style.width = '100%';
+  document.getElementById('myGrid').style.display = 'none';
+
+  window.rows = [];
+  const start = window.performance.now();
+  client.stream(adjustTimeZoneOffset(options), {
+    meta: addHead,
+    data: addRow,
+    error: (error) => {
+      setLoadingVisible(false);
+      showError(error);
+    },
+    done: done(rows, start)
+  });
+}
 
 function done(rows, start) {
   return function () {
@@ -154,9 +126,39 @@ function done(rows, start) {
       rowData: rows
     };
 
-    agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
     setLoadingVisible(false);
+    agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
   };
+}
+
+function setLoadingVisible(visible) {
+  document.getElementById('lds-roller-wrapper').style.display =
+    visible ? "block" : "none";
+}
+
+function showError(error) {
+  if (error) {
+    console.error(error);
+    document.getElementById('msg').innerHTML =
+      typeof error === 'string' ? error :
+        error.jsonBody.error ? error.jsonBody.error : error.jsonBody.msg;
+  }
+}
+
+function showMsg(msg) {
+  console.log(msg);
+  document.getElementById('msg').innerHTML = msg;
+}
+
+function adjustTimeZoneOffset(options) {
+  return Object.assign({}, options, {
+    dateFrom: new Date(new Date(options.dateFrom).getTime() +
+      (new Date(options.dateFrom).getTimezoneOffset() * 60000))
+      .toISOString(),
+    dateTo: new Date(new Date(options.dateTo).getTime() +
+      (new Date(options.dateTo).getTimezoneOffset() * 60000))
+      .toISOString()
+  });
 }
 
 function addRow(event) {
