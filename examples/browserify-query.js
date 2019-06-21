@@ -7,7 +7,8 @@ const options = {
   "dateFrom": "2018-07-02T11:00:00Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
-  mapMetadata: true
+  mapMetadata: true,
+  streamMethod: 'Fetch stream'
 };
 
 const client = devo.client(credentials);
@@ -15,6 +16,7 @@ const client = devo.client(credentials);
 document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
 document.getElementById("to-input").value = options.dateTo.slice(0, -1);
 document.getElementById("query-text").value = options.query;
+document.getElementById("streamMethod").value = options.streamMethod;
 document.getElementById("responseRowFormat").value =
   options.mapMetadata ? 'Object data' : 'Raw data';
 
@@ -27,9 +29,11 @@ document.getElementById("from-input").addEventListener('change', (event) => {
 document.getElementById("to-input").addEventListener('change', (event) => {
   options.dateTo = new Date(event.currentTarget.value).toISOString();
 });
-
 document.getElementById("query-text").addEventListener('change', (event) => {
   options.query = event.currentTarget.value;
+});
+document.getElementById("streamMethod").addEventListener('change', (event) => {
+  options.streamMethod = event.currentTarget.value;
 });
 
 document.getElementById("btn_launch").onclick = launchRequest;
@@ -75,7 +79,10 @@ function launchRequest() {
 
   window.rows = [];
   const start = window.performance.now();
-  client.stream(adjustTimeZoneOffset(options), {
+  const streamMethod = options.streamMethod === 'Oboe stream' ?
+    'stream' : 'streamFetch';
+
+  client[streamMethod](adjustTimeZoneOffset(options), {
     meta: addHead,
     data: addRow,
     error: (error) => {
@@ -125,6 +132,8 @@ function done(rows, start) {
       }),
       rowData: rows
     };
+
+    window.row = undefined;
 
     setLoadingVisible(false);
     agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
