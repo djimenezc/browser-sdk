@@ -4,7 +4,7 @@ const devo = require('@devo/browser-sdk');
 const credentials = require('./credentials.json');
 
 const options = {
-  "dateFrom": "2018-07-02T11:00:00Z",
+  "dateFrom": "2018-07-02T11:30:28Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
   mapMetadata: true,
@@ -133,7 +133,8 @@ function done(rows, start) {
       rowData: rows
     };
 
-    window.row = undefined;
+    //Clean data
+    // window.row = undefined;
 
     setLoadingVisible(false);
     agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
