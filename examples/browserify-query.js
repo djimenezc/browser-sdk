@@ -4,7 +4,7 @@ const devo = require('@devo/browser-sdk');
 const credentials = require('./credentials.json');
 
 const options = {
-  "dateFrom": "2018-07-02T00:00:00Z",
+  "dateFrom": "2018-07-02T11:30:00Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
   mapMetadata: false,
