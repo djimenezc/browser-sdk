@@ -4,10 +4,10 @@ const devo = require('@devo/browser-sdk');
 const credentials = require('./credentials.json');
 
 const options = {
-  "dateFrom": "2018-07-02T11:30:28Z",
+  "dateFrom": "2018-07-02T00:00:00Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
-  mapMetadata: true,
+  mapMetadata: false,
   streamMethod: 'Fetch stream'
 };
 
@@ -134,7 +134,7 @@ function done(rows, start) {
     };
 
     //Clean data
-    // window.row = undefined;
+    window.row = undefined;
 
     setLoadingVisible(false);
     agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
