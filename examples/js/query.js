@@ -1,7 +1,7 @@
 'use strict';
 
 const devo = require('@devo/browser-sdk');
-const credentials = require('./credentials.json');
+const credentials = require('../credentials.json');
 
 const options = {
   "dateFrom": "2018-07-02T11:30:00Z",
@@ -12,59 +12,60 @@ const options = {
 };
 
 const client = devo.client(credentials);
+window.rows = [];
+window.columns = [];
 
-document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
-document.getElementById("to-input").value = options.dateTo.slice(0, -1);
-document.getElementById("query-text").value = options.query;
-document.getElementById("streamMethod").value = options.streamMethod;
-document.getElementById("responseRowFormat").value =
-  options.mapMetadata ? 'Object data' : 'Raw data';
+let agGridTable;
 
-document.getElementById("responseRowFormat").addEventListener('change', (event) => {
-  options.mapMetadata = event.currentTarget.value === 'Object data';
-});
-document.getElementById("from-input").addEventListener('change', (event) => {
-  options.dateFrom = new Date(event.currentTarget.value).toISOString();
-});
-document.getElementById("to-input").addEventListener('change', (event) => {
-  options.dateTo = new Date(event.currentTarget.value).toISOString();
-});
-document.getElementById("query-text").addEventListener('change', (event) => {
-  options.query = event.currentTarget.value;
-});
-document.getElementById("streamMethod").addEventListener('change', (event) => {
-  options.streamMethod = event.currentTarget.value;
-});
+function registerListeners() {
+  document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
+  document.getElementById("to-input").value = options.dateTo.slice(0, -1);
+  document.getElementById("query-text").value = options.query;
+  document.getElementById("streamMethod").value = options.streamMethod;
+  document.getElementById("responseRowFormat").value =
+    options.mapMetadata ? 'Object data' : 'Raw data';
 
-document.getElementById("btn_launch").onclick = launchRequest;
-document.getElementById("btn_xslt").onclick = function () {
-  download('xlst')
-};
-document.getElementById("btn_csv").onclick = function () {
-  download('csv')
-};
-document.getElementById("btn_tsv").onclick = function () {
-  download('tsv')
-};
-document.getElementById("btn_raw").onclick = function () {
-  download('raw')
-};
-document.getElementById("btn_msgpack").onclick = function () {
-  download('msgpack')
-};
-document.getElementById("btn_json").onclick = function () {
-  download('json')
-};
+  document.getElementById("responseRowFormat").addEventListener('change', (event) => {
+    options.mapMetadata = event.currentTarget.value === 'Object data';
+  });
+  document.getElementById("from-input").addEventListener('change', (event) => {
+    options.dateFrom = new Date(event.currentTarget.value).toISOString();
+  });
+  document.getElementById("to-input").addEventListener('change', (event) => {
+    options.dateTo = new Date(event.currentTarget.value).toISOString();
+  });
+  document.getElementById("query-text").addEventListener('change', (event) => {
+    options.query = event.currentTarget.value;
+  });
+  document.getElementById("streamMethod").addEventListener('change', (event) => {
+    options.streamMethod = event.currentTarget.value;
+  });
+
+  document.getElementById("btn_launch").onclick = launchRequest;
+  document.getElementById("btn_xslt").onclick = function () {
+    download('xlst')
+  };
+  document.getElementById("btn_csv").onclick = function () {
+    download('csv')
+  };
+  document.getElementById("btn_tsv").onclick = function () {
+    download('tsv')
+  };
+  document.getElementById("btn_raw").onclick = function () {
+    download('raw')
+  };
+  document.getElementById("btn_msgpack").onclick = function () {
+    download('msgpack')
+  };
+  document.getElementById("btn_json").onclick = function () {
+    download('json')
+  };
+}
 
 function download(format) {
   options.format = format;
   client.download(options).catch(error => console.error)
 }
-
-window.rows = [];
-window.columns = [];
-
-let agGridTable;
 
 function launchRequest() {
   console.log('starting request');
@@ -187,3 +188,6 @@ function addHead(event) {
   window.columns = Object.keys(event).sort(compare).map((item) => item);
 }
 
+module.exports = {
+  registerListeners
+};
