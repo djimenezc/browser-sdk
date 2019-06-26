@@ -2,6 +2,7 @@
 
 const devo = require('@devo/browser-sdk');
 const credentials = require('../credentials.json');
+const {Grid} = require('ag-grid-community');
 
 const options = {
   "dateFrom": "2018-07-02T11:30:00Z",
@@ -12,8 +13,9 @@ const options = {
 };
 
 const client = devo.client(credentials);
-window.rows = [];
-window.columns = [];
+let rows = [];
+let columns = [];
+let lockRequest = false;
 
 let agGridTable;
 
@@ -68,30 +70,36 @@ function download(format) {
 }
 
 function launchRequest() {
-  console.log('starting request');
-  setLoadingVisible(true);
-  showMsg('');
-  if (agGridTable) {
-    agGridTable.destroy();
-    agGridTable = null;
+  if (!lockRequest) {
+    console.log('starting request');
+    lockRequest = true;
+    setLoadingVisible(true);
+    showMsg('');
+    if (agGridTable) {
+      agGridTable.destroy();
+      agGridTable = null;
+    }
+    document.getElementById('myGrid').style.width = '100%';
+    document.getElementById('myGrid').style.display = 'none';
+
+    rows = [];
+    const start = window.performance.now();
+    const streamMethod = options.streamMethod === 'Oboe stream' ?
+      'stream' : 'streamFetch';
+
+    client[streamMethod](adjustTimeZoneOffset(options), {
+      meta: addHead,
+      data: addRow,
+      error: (error) => {
+        setLoadingVisible(false);
+        showError(error);
+      },
+      done: done(rows, start)
+    });
+  } else {
+    console.error('Request in progress, wait until finish to launch another' +
+      ' one');
   }
-  document.getElementById('myGrid').style.width = '100%';
-  document.getElementById('myGrid').style.display = 'none';
-
-  window.rows = [];
-  const start = window.performance.now();
-  const streamMethod = options.streamMethod === 'Oboe stream' ?
-    'stream' : 'streamFetch';
-
-  client[streamMethod](adjustTimeZoneOffset(options), {
-    meta: addHead,
-    data: addRow,
-    error: (error) => {
-      setLoadingVisible(false);
-      showError(error);
-    },
-    done: done(rows, start)
-  });
 }
 
 function done(rows, start) {
@@ -135,10 +143,11 @@ function done(rows, start) {
     };
 
     //Clean data
-    window.row = undefined;
+    // window.row = undefined;
 
     setLoadingVisible(false);
-    agGridTable = new agGrid.Grid(eGridDiv, gridOptions);
+    agGridTable = new Grid(eGridDiv, gridOptions);
+    lockRequest = false;
   };
 }
 
@@ -185,7 +194,7 @@ function addHead(event) {
     return 0;
   }
 
-  window.columns = Object.keys(event).sort(compare).map((item) => item);
+  columns = Object.keys(event).sort(compare).map((item) => item);
 }
 
 module.exports = {

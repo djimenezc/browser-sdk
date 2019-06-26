@@ -167,8 +167,8 @@ describe('Browser client', () => {
           meta: () => null,
           data: (d) => {
             if (doDone === true) return;
-            Array.isArray(d) ? (doDone = true) && done() : done(new Error('Data' +
-              ' should be an array'));
+            isObject(d) ? (doDone = true) && done() : done(new Error('Data' +
+              ' should be an object'));
             cli.abort();
             server.stop();
           },

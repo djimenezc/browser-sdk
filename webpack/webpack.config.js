@@ -1,7 +1,5 @@
 'use strict';
 
-const webpack = require('webpack');
-
 const path = require('path');
 console.log('process.env.NODE_ENV', process.env.NODE_ENV);
 
@@ -11,7 +9,6 @@ module.exports = {
     rules: [
       {
         test: /\.js(x?)$/,
-        // exclude: /node_modules\/(?!@devo).*/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
@@ -31,9 +28,9 @@ module.exports = {
       {
         test: /\.scss$/,
         use: [
-          {loader: "style-loader"}, // creates style nodes from JS strings
-          {loader: "css-loader"}, // translates CSS into CommonJS
-          {loader: "sass-loader"} // compiles Sass to CSS
+          {loader: 'style-loader'}, // creates style nodes from JS strings
+          {loader: 'css-loader'}, // translates CSS into CommonJS
+          {loader: 'sass-loader'} // compiles Sass to CSS
         ]
       },
       {

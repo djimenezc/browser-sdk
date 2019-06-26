@@ -2,15 +2,15 @@
 
 module.exports = function (api) {
   api.cache(true);
-  const presets = ["@babel/preset-env"];
+  const presets = ['@babel/preset-env'];
   const plugins = [
     [
-      "@babel/plugin-transform-runtime",
+      '@babel/plugin-transform-runtime',
       {
-        "corejs": false,
-        "helpers": true,
-        "regenerator": true,
-        "useESModules": false
+        'corejs': false,
+        'helpers': true,
+        'regenerator': true,
+        'useESModules': false
       }
     ]
   ];

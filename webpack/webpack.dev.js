@@ -3,7 +3,6 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const baseConfig = require('./webpack.config');
-const express = require('express');
 
 module.exports = merge(baseConfig, {
   entry: {
