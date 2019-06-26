@@ -19,7 +19,7 @@ const credentials2 = {
 };
 const nowIsoString = new Date().toISOString();
 const now = new Date();
-now.setMinutes(now.getMinutes() - 30);
+now.setMinutes(now.getMinutes() - 1);
 
 const options2 = {
   'dateFrom': now.toISOString(),
@@ -60,7 +60,6 @@ describe('Browser client', () => {
   });
 
   it('sends web.activty.all query with a lot of events query', async () => {
-
     const client = clientLib.create(credentials2);
     const result = await client.query(options2);
     result.object.length.should.be.greaterThan(0);
@@ -121,6 +120,19 @@ describe('Browser client', () => {
     return server.stop()
   });
 
+  it('queries using fetchStreamReadable method', async (doneMocha) => {
+    global.XMLHttpRequest = require('xhr2');
+    global.xhr = new XMLHttpRequest();
+    global.ReadableStream = require('web-streams-polyfill/ponyfill/es6').ReadableStream;
+
+    const client = clientLib.create(credentials2);
+    const result = await client.streamFetch(options2, {
+      done: doneMocha
+    })._request;
+    result.object.length.should.be.greaterThan(0);
+    result.object.length.should.be.a.Number();
+  });
+
   it('table schema (table exists)', async () => {
     const object = [
       {
@@ -145,71 +157,74 @@ describe('Browser client', () => {
     server.stop();
   });
 
-  it('queries in streaming mode - event is an object', done => {
-    const options = {
-      dateFrom: from,
-      dateTo: to,
-      query: QUERY,
-    };
-    const server = new TestServer({
-      contentType: 'json',
-      response: {
-        object: {
-          m: {colA: {index: 0, type: 'int4'}},
-          d: [[0], [1]]
+  forEach([[
+    'event is an object'
+  ]])
+    .it('queries in streaming mode - event is an object', done => {
+      const options = {
+        dateFrom: from,
+        dateTo: to,
+        query: QUERY,
+      };
+      const server = new TestServer({
+        contentType: 'json',
+        response: {
+          object: {
+            m: {colA: {index: 0, type: 'int4'}},
+            d: [[0], [1]]
+          }
         }
-      }
-    });
-    let doDone = false;
-    server.start(3331)
-      .then(() => {
-        const cli = client.stream(options, {
-          meta: () => null,
-          data: (d) => {
-            if (doDone === true) return;
-            isObject(d) ? (doDone = true) && done() : done(new Error('Data' +
-              ' should be an object'));
-            cli.abort();
-            server.stop();
-          },
-          error: done
-        });
-      })
-      .catch(done);
-  });
-
-  it('queries in streaming mode - event is an array', done => {
-    const options = {
-      dateFrom: from,
-      dateTo: to,
-      query: QUERY,
-      mapMetadata: false,
-    };
-    let doDone = false;
-
-    const server = new TestServer({
-      contentType: 'json',
-      response: {
-        object: {
-          m: {colA: {index: 0, type: 'int4'}},
-          d: [[0], [1]]
-        }
-      }
-    });
-    server.start(3331)
-      .then(() => {
-        const cli = client.stream(options, {
-          meta: () => null,
-          data: (d) => {
-            if (doDone === true) return;
-            Array.isArray(d) ? (doDone = true) && done() : done(new Error('Data should be an array'));
-            cli.abort();
-            server.stop();
-          },
-          error: done
+      });
+      let doDone = false;
+      server.start(3331)
+        .then(() => {
+          const cli = client.stream(options, {
+            meta: () => null,
+            data: (d) => {
+              if (doDone === true) return;
+              isObject(d) ? (doDone = true) && done() : done(new Error('Data' +
+                ' should be an object'));
+              cli.abort();
+              server.stop();
+            },
+            error: done
+          });
         })
-      }).catch(done);
-  });
+        .catch(done);
+    });
+
+//   it('queries in streaming mode - event is an array', done => {
+//     const options = {
+//       dateFrom: from,
+//       dateTo: to,
+//       query: QUERY,
+//       mapMetadata: false,
+//     };
+//     let doDone = false;
+//
+//     const server = new TestServer({
+//       contentType: 'json',
+//       response: {
+//         object: {
+//           m: {colA: {index: 0, type: 'int4'}},
+//           d: [[0], [1]]
+//         }
+//       }
+//     });
+//     server.start(3331)
+//       .then(() => {
+//         const cli = client.stream(options, {
+//           meta: () => null,
+//           data: (d) => {
+//             if (doDone === true) return;
+//             Array.isArray(d) ? (doDone = true) && done() : done(new Error('Data should be an array'));
+//             cli.abort();
+//             server.stop();
+//           },
+//           error: done
+//         })
+//       }).catch(done);
+//   });
 });
 
 class TestServer {
