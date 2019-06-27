@@ -20,7 +20,9 @@
     "postinstall": "mkdir -p dist",
     "webpack:prod": "webpack --config ./webpack/webpack.prod.js",
     "webpack:dev": "webpack-dev-server --watch-content-base -d --progress --config ./webpack/webpack.dev.js",
-    "dist": "npm run webpack:prod"
+    "dist": "npm run webpack:prod",
+    "test:coverage": "npm run test",
+    "eslint": "npm run eslint"
   },
   "keywords": [
     "Devo",
