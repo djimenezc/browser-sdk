@@ -25,6 +25,9 @@
     "eslint": "npm run lint",
     "eslint-test": "echo 'eslint-test not implemented'"
   },
+  "publishConfig": {
+    "registry": "https://nexus.devo.internal/repository/npm-hosted/"
+  },
   "keywords": [
     "Devo",
     "SDK",
