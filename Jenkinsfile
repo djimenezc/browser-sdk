@@ -2,4 +2,8 @@
 
 @Library('devo-jenkins@versions/dashboards') _
 
-jsTemplate()
+jsTemplate([
+  noAddVersion: true,
+  noDeploy: true,
+  noDoublePackage: true
+])
