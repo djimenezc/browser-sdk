@@ -200,5 +200,5 @@ function addHead(event) {
 module.exports = {
   registerListeners,
   getRows: () => rows,
-  columns: () => columns
+  getColumns: () => columns
 };
