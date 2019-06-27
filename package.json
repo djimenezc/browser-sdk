@@ -22,7 +22,8 @@
     "webpack:dev": "webpack-dev-server --watch-content-base -d --progress --config ./webpack/webpack.dev.js",
     "dist": "npm run webpack:prod",
     "test:coverage": "npm run test",
-    "eslint": "npm run lint"
+    "eslint": "npm run lint",
+    "eslint-test": "echo 'eslint-test not implemented'"
   },
   "keywords": [
     "Devo",
