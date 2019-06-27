@@ -121,6 +121,22 @@ describe('Browser client', () => {
     return server.stop()
   });
 
+  it('queries using fetchStreamReadable method', async (doneMocha) => {
+    global.XMLHttpRequest = require('xhr2');
+    global.xhr = new XMLHttpRequest();
+    global.ReadableStream = require('web-streams-polyfill/ponyfill/es6').ReadableStream;
+
+    const client = clientLib.create(credentials2);
+    client.streamFetch(options2, {
+      done: doneMocha,
+      meta: () => console.log(1),
+      data: () => console.log(1),
+      error: () => console.error(2)
+    });
+    // result.object.length.should.be.greaterThan(0);
+    // result.object.length.should.be.a.Number();
+  });
+
   it('table schema (table exists)', async () => {
     const object = [
       {
