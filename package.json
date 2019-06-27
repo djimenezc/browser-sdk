@@ -9,7 +9,7 @@
       "node": true
     }
   },
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "test": "echo 'test not implemented'",
     "clean": "echo 'clean not implemented'",
