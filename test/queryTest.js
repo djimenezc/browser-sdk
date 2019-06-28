@@ -2,7 +2,7 @@
 
 require('should');
 const http = require('http');
-// global.fetch = require('node-fetch');
+global.fetch = require('node-fetch');
 
 const clientLib = require('../lib/client.js');
 const forEach = require('mocha-each');
