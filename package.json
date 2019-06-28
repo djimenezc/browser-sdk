@@ -11,9 +11,8 @@
   },
   "main": "lib/index.js",
   "scripts": {
-    "test": "echo 'test not implemented'",
     "clean": "echo 'clean not implemented'",
-    "test1": "mocha --reporter list --timeout 10000 test/*.js",
+    "test": "mocha --reporter list --timeout 10000 test/*.js",
     "posttest": "npm run lint",
     "lint": "eslint '**/*.js'",
     "manualtest": "mocha --reporter list --timeout 10000 test/manual/*.js",
