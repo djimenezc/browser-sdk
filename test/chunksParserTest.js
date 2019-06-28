@@ -55,7 +55,7 @@ describe('ChunkParser', () => {
           'processError': 1
         },
         finalState: 'parsed',
-        bufferString: ''
+        bufferString: genericError.toString()
       }
     ]
   ])

@@ -15,8 +15,8 @@ const callbacks = {
 };
 
 function str2ArrayBuffer(str) {
-  const buf = new ArrayBuffer(str.length * 2); // 2 bytes for each char
-  const bufView = new Uint16Array(buf);
+  const buf = new ArrayBuffer(str.length ); // 2 bytes for each char
+  const bufView = new Uint8Array(buf);
   let i = 0, strLen = str.length;
   for (; i < strLen; i++) {
     bufView[i] = str.charCodeAt(i);
@@ -39,7 +39,7 @@ class FakeReader {
       from = to;
       return result;
     });
-    this.buffer.push(str.slice(from));
+    this.buffer.push(str.substring(from));
     this.generator = bufferRead(this.buffer);
   }
 
@@ -72,9 +72,9 @@ describe('fetchStreamReadable', () => {
       [200, 500, 1000, 10000],
       {
         callbacks: {
-          processMeta: 1,
-          processEvent: 15,
-          processDone: 1
+          meta: 1,
+          data: 15,
+          done: 1
         },
         finalState: 'parsed',
         bufferString: ''
@@ -86,9 +86,9 @@ describe('fetchStreamReadable', () => {
       [200, 500, 700],
       {
         callbacks: {
-          processMeta: 1,
-          processEvent: 0,
-          processDone: 0
+          meta: 1,
+          data: 0,
+          done: 1
         },
         finalState: 'event',
         bufferString: activityAll.substring(995, 1000)
@@ -100,11 +100,11 @@ describe('fetchStreamReadable', () => {
       [200, 500, 1000, 10000],
       {
         callbacks: {
-          processError: 1,
-          processDone: 1
+          error: 1,
+          done: 1
         },
         finalState: 'parsed',
-        bufferString: ''
+        bufferString: genericError.toString()
       }
     ]
   ])
