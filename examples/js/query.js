@@ -166,7 +166,9 @@ function showError(error) {
 }
 
 function showMsg(msg) {
-  console.log(msg);
+  if(msg) {
+    console.log(msg);
+  }
   document.getElementById('msg').innerHTML = msg;
 }
 
