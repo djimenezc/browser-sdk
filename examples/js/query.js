@@ -18,6 +18,7 @@ let columns = [];
 let lockRequest = false;
 
 let agGridTable;
+let request;
 
 function registerListeners() {
   document.getElementById("from-input").value = options.dateFrom.slice(0, -1);
@@ -44,6 +45,7 @@ function registerListeners() {
   });
 
   document.getElementById("btn_launch").onclick = launchRequest;
+  document.getElementById("btn_cancel").onclick = cancelRequest;
   document.getElementById("btn_xslt").onclick = function () {
     download('xlst')
   };
@@ -69,6 +71,11 @@ function download(format) {
   client.download(options).catch(error => console.error)
 }
 
+function cancelRequest() {
+  request.abort();
+  setLoadingVisible(false);
+}
+
 function launchRequest() {
   if (!lockRequest) {
     console.log('starting request');
@@ -87,7 +94,7 @@ function launchRequest() {
     const streamMethod = options.streamMethod === 'Oboe stream' ?
       'stream' : 'streamFetch';
 
-    client[streamMethod](adjustTimeZoneOffset(options), {
+    request = client[streamMethod](adjustTimeZoneOffset(options), {
       meta: addHead,
       data: addRow,
       error: (error) => {
