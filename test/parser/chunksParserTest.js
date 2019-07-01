@@ -4,8 +4,9 @@ require('should');
 const forEach = require('mocha-each');
 const {spy, assert} = require('sinon');
 
-const {parse} = require('../lib/chunksParser.js');
-const {activityAll, genericError} = require('./response1.js');
+const {parse} = require('../../lib/parser/chunksParser.js');
+const {activityAll, genericError, parsingErrorLargeRequest, parsingErrorMultiplesSeparators} =
+  require('../response1.js');
 
 const callbacks = {
   processMeta: spy(),
@@ -56,6 +57,32 @@ describe('ChunkParser', () => {
         },
         finalState: 'parsed',
         bufferString: genericError.toString()
+      }
+    ],
+    [
+      'parse large request',
+      parsingErrorLargeRequest.toString(),
+      'idle',
+      {
+        callbacks: {
+          'processMeta': 1,
+          'processEvent': 1624
+        },
+        finalState: 'parsed',
+        bufferString: ''
+      }
+    ],
+    [
+      'parse response with json arrays in the events',
+      parsingErrorMultiplesSeparators.toString(),
+      'idle',
+      {
+        callbacks: {
+          'processMeta': 1,
+          'processEvent': 5
+        },
+        finalState: 'parsed',
+        bufferString: ''
       }
     ]
   ])

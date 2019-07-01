@@ -5,7 +5,7 @@ const credentials = require('../credentials.json');
 const {Grid} = require('ag-grid-community');
 
 const options = {
-  "dateFrom": "2018-07-02T11:30:28Z",
+  "dateFrom": "2018-07-01T11:00:28Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
   mapMetadata: false,
