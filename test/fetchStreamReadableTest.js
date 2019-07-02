@@ -5,7 +5,7 @@ const forEach = require('mocha-each');
 const {spy, assert} = require('sinon');
 
 const {processStream} = require('../lib/fetchStreamReadable.js');
-const {activityAll, genericError} = require('./response1.js');
+const {activityAll, genericError, preaggrError} = require('./response1.js');
 
 const callbacks = {
   meta: spy(),
@@ -25,7 +25,7 @@ function str2ArrayBuffer(str) {
 }
 
 function* bufferRead(buffer) {
-  console.log('read chunk');
+  // console.log('read chunk');
   for (const chunk of buffer) {
     yield new Uint8Array(str2ArrayBuffer(chunk));
   }
@@ -101,10 +101,23 @@ describe('fetchStreamReadable', () => {
       {
         callbacks: {
           error: 1,
-          done: 1
+          done: 0
         },
-        finalState: 'parsed',
+        finalState: 'parsedError',
         bufferString: genericError.toString()
+      }
+    ],
+    [
+      'return error parsed when error is message field',
+      preaggrError.toString(),
+      [],
+      {
+        callbacks: {
+          error: 1,
+          done: 0
+        },
+        finalState: 'parsedError',
+        bufferString: preaggrError.toString()
       }
     ]
   ])
