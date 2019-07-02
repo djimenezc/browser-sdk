@@ -55,7 +55,7 @@ describe('ChunkParser', () => {
         callbacks: {
           'processError': 1
         },
-        finalState: 'parsed',
+        finalState: 'parsedError',
         bufferString: genericError.toString()
       }
     ],
