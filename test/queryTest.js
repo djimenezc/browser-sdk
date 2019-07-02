@@ -124,12 +124,12 @@ describe('Browser client', () => {
   //   // global.XMLHttpRequest = require('xhr2');
   //   // global.xhr = new XMLHttpRequest();
   //   // global.fetch = require('node-fetch');
-  //   // global.fetch = require('node-fetch2');
-  //   // global.Response = fetch.Response;
+  //   global.fetch = require('node-fetch2');
+  //   global.Response = fetch.Response;
   //   require('isomorphic-fetch/fetch-npm-node.js');
   //   Response.prototype.body= '';
   //
-  //   global.ReadableStream = require('web-streams-polyfill/ponyfill/es6').ReadableStream;
+  //   // global.ReadableStream = require('web-streams-polyfill/ponyfill/es6').ReadableStream;
   //
   //   const client = clientLib.create(credentials2);
   //   client.streamFetch(options2, {
