@@ -5,7 +5,7 @@ const credentials = require('../credentials.json');
 const {Grid} = require('ag-grid-community');
 
 const options = {
-  "dateFrom": "2018-07-01T11:00:28Z",
+  "dateFrom": "2018-07-02T05:00:28Z",
   "dateTo": "2018-07-02T11:30:30Z",
   "query": "from siem.logtrust.web.activityAll",
   mapMetadata: false,
@@ -74,6 +74,7 @@ function download(format) {
 function cancelRequest() {
   request.abort();
   setLoadingVisible(false);
+  lockRequest = false;
 }
 
 function launchRequest() {
@@ -100,6 +101,7 @@ function launchRequest() {
       error: (error) => {
         setLoadingVisible(false);
         showError(error);
+        lockRequest = false;
       },
       done: done(rows, start)
     });
@@ -150,7 +152,7 @@ function done(rows, start) {
     };
 
     //Clean data
-    // window.row = undefined;
+    window.row = undefined;
 
     setLoadingVisible(false);
     agGridTable = new Grid(eGridDiv, gridOptions);
