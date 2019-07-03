@@ -5,7 +5,8 @@ const forEach = require('mocha-each');
 const {spy, assert} = require('sinon');
 
 const {processStream} = require('../lib/fetchStreamReadable.js');
-const {activityAll, genericError, preaggrError} = require('./response1.js');
+const {activityAll, genericError, preaggrError, noEvents} =
+  require('./response1.js');
 
 const callbacks = {
   meta: spy(),
@@ -15,7 +16,7 @@ const callbacks = {
 };
 
 function str2ArrayBuffer(str) {
-  const buf = new ArrayBuffer(str.length ); // 2 bytes for each char
+  const buf = new ArrayBuffer(str.length); // 2 bytes for each char
   const bufView = new Uint8Array(buf);
   let i = 0, strLen = str.length;
   for (; i < strLen; i++) {
@@ -118,6 +119,20 @@ describe('fetchStreamReadable', () => {
         },
         finalState: 'parsedError',
         bufferString: preaggrError.toString()
+      }
+    ],
+    [
+      'no return any events',
+      noEvents.toString(),
+      [],
+      {
+        callbacks: {
+          meta: 1,
+          data: 0,
+          done: 1
+        },
+        finalState: 'parsed',
+        bufferString: ''
       }
     ]
   ])
