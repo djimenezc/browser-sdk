@@ -1,6 +1,6 @@
 {
   "name": "@devo/browser-sdk-dashboard",
-  "version": "1.0.0-14",
+  "version": "1.0.0-15",
   "description": "Devo browser SDK",
   "author": "Devo Dev Team",
   "eslintConfig": {
