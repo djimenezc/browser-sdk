@@ -166,41 +166,40 @@ describe('Browser client', () => {
     server.stop();
   });
 
-  forEach([[
-    'event is an object'
-  ]])
-    .it('queries in streaming mode - event is an object', done => {
-      const options = {
-        dateFrom: from,
-        dateTo: to,
-        query: QUERY,
-      };
-      const server = new TestServer({
-        contentType: 'json',
-        response: {
-          object: {
-            m: {colA: {index: 0, type: 'int4'}},
-            d: [[0], [1]]
-          }
+  it('event is an object queries in streaming mode - event is an object', done => {
+    const options = {
+      dateFrom: from,
+      dateTo: to,
+      query: QUERY,
+    };
+    const server = new TestServer({
+      contentType: 'json',
+      response: {
+        object: {
+          m: {colA: {index: 0, type: 'int4'}},
+          d: [[0], [1]]
         }
-      });
-      let doDone = false;
-      server.start(3331)
-        .then(() => {
-          const cli = client.stream(options, {
-            meta: () => null,
-            data: (d) => {
-              if (doDone === true) return;
-              isObject(d) ? (doDone = true) && done() : done(new Error('Data' +
-                ' should be an object'));
-              cli.abort();
-              server.stop();
-            },
-            error: done
-          });
-        })
-        .catch(done);
+      }
     });
+    let doDone = false;
+    server.start(3331)
+      .then(() => {
+        const cli = client.stream(options, {
+          meta: () => null,
+          data: (d) => {
+            if (doDone === true) return;
+            isObject(d) ? (doDone = true) && done() : done(new Error('Data' +
+              ' should be an object'));
+            cli.abort();
+            server.stop();
+          },
+          error: console.error,
+          done: done
+        });
+      })
+      .catch(done || function () {
+      });
+  });
 
 //   it('queries in streaming mode - event is an array', done => {
 //     const options = {
