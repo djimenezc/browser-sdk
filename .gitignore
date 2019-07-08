@@ -6,3 +6,4 @@ examples/*-bundle.js
 .idea
 package-lock.json
 credentials.json
+*.iml
