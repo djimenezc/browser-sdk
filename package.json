@@ -15,6 +15,7 @@
     "test": "mocha --reporter spec --timeout 10000 test/*.js",
     "posttest": "npm run lint",
     "lint": "eslint '**/*.js'",
+    "publish": "cd lib && npm publish",
     "release:prerelease": "npm version prerelease",
     "release:minor": "npm version minor",
     "release:major": "npm version major",
