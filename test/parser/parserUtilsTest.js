@@ -2,7 +2,7 @@
 
 require('should');
 
-const {nthIndex, getAllPosition, numberOccurrences} =
+const {nthIndex, getAllPosition, numberOccurrences, regexIndexOf} =
   require('../../lib/parser/parserUtils.js');
 
 const jsonString =
@@ -35,7 +35,26 @@ describe('Parser utils', () => {
 
       const position = getAllPosition(str, 'ABC');
 
-      position.should.be.eql([8,16,24]);
+      position.should.be.eql([8, 16, 24]);
+    });
+  });
+
+  describe('regexIndexOf', () => {
+
+
+    it('should find the position of simple pattern', () => {
+      const str = '[1562754170000,"POST",47]  ,    [1562754180000,null,2]';
+      const position = regexIndexOf(str, ']\\s*,\\s*\\[', 0);
+
+      position.should.be.eql(24);
+    });
+
+    it('should find the position of simple brackets pattern with no blanks', () => {
+      const str = '[1562754170000,"POST",47],[1562754180000,null,2]';
+
+      const position = regexIndexOf(str, /]\s*,\s*\[/, 0);
+
+      position.should.be.eql(24);
     });
   });
 
