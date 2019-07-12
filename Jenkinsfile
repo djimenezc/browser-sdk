@@ -5,5 +5,6 @@
 jsTemplate([
   noAddVersion: true,
   noDeploy: true,
-  noDoublePackage: true
+  noDoublePackage: true,
+  withCrendentials: true
 ])
