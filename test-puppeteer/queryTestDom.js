@@ -5,7 +5,7 @@ global.fetch = require('node-fetch');
 
 const clientLib = require('../lib/client.js');
 
-const credentials2 = require('../examples/credentials.json');
+const credentials2 = require('../credentials.json');
 
 const nowIsoString = new Date().toISOString();
 const now = new Date();

@@ -12,7 +12,7 @@ const credentials = {
   apiKey: 'key',
   apiSecret: 'secret',
 };
-const credentials2 = require('../examples/credentials.json');
+const credentials2 = require('../credentials.json');
 const nowIsoString = new Date().toISOString();
 const now = new Date();
 now.setMinutes(now.getMinutes() - 1);
