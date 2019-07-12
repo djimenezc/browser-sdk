@@ -5,11 +5,8 @@ global.fetch = require('node-fetch');
 
 const clientLib = require('../lib/client.js');
 
-const credentials2 = {
-  url: 'https://apiv2-eu.devo.com/search',
-  apiKey: 'Aj2TszfxlRPrNXPfyzKa8BFM6DYlGcka',
-  apiSecret: 'i3eA1mdkwJCauYfvunKMgeJFtFup8hLO'
-};
+const credentials2 = require('../examples/credentials.json');
+
 const nowIsoString = new Date().toISOString();
 const now = new Date();
 now.setMinutes(now.getMinutes() - 1);
